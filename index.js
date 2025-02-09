@@ -1,25 +1,85 @@
-const PORT = 3000;
+const PORT = 3001;
 
 import express from "express";
 import sql from "./db/sql.js";
 import appRoutes from "./routes/main.js";
 import NotFoundMiddleWare from "./middleware/not-found.js";
 import ErrorHandlerMiddleware from "./middleware/error-handler.js";
+import { Strategy } from "passport-local";
+import bodyParser from "body-parser";
+import session from "express-session";
+import passport from "passport";
+import bcrypt from "bcrypt";
 
 const app = express();
 
 // Middlewares
 
 app.use(express.json());
-app.use("/api/v1", appRoutes);
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(
+  session({
+    resave: false,
+    saveUninitialized: true,
+    secret: process.env.SESSION_SECRET,
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24,
+    },
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+
+// routes
 app.get("/", async (_, res) => {
-  const response = await sql`SELECT version()`;
-  const { version } = response[0];
-  res.json({ version });
+  res.json({
+    msg: "Welcome to Calendar Project Backend (from: Ayush Dhanraj)",
+  });
 });
+app.use("/api/v1", appRoutes);
 
 app.use(NotFoundMiddleWare);
-// app.use(ErrorHandlerMiddleware);
+app.use(ErrorHandlerMiddleware);
+
+passport.use(
+  "local",
+  new Strategy(
+    { usernameField: "email" }, // ✅ Tell Passport to use "email" instead of "username"
+    async function verify(email, password, cb) {
+      console.log("Received login attempt:", email, password); // 🔥 Debugging log
+      try {
+        const retrievedUser = await sql(
+          "SELECT * FROM users WHERE email = $1",
+          [email]
+        );
+
+        if (!retrievedUser.length) {
+          return cb(null, false, { message: "User doesn't exist" });
+        }
+
+        const { password: storedPassword, ...userDetails } = retrievedUser[0];
+
+        const passwordMatch = await bcrypt.compare(password, storedPassword);
+
+        if (passwordMatch) {
+          return cb(null, userDetails);
+        } else {
+          return cb(null, false, { message: "Incorrect password" });
+        }
+      } catch (e) {
+        return cb(e);
+      }
+    }
+  )
+);
+
+passport.serializeUser((user, cb) => {
+  cb(null, user);
+});
+
+passport.deserializeUser((user, cb) => {
+  cb(null, user);
+});
 
 const start = async () => {
   try {
