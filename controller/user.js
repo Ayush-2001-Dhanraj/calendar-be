@@ -22,7 +22,6 @@ const updateUserDetails = async (req, res, next) => {
     const user = await sql("SELECT * FROM users WHERE id =$1", [userID]);
     if (user.length) {
       const { firstName, lastName, email } = req.body;
-      console.log(req.body);
       const updatedUser = await sql(
         "UPDATE users set first_name = $1, last_name = $2, email = $3 WHERE id = $4 RETURNING id, first_name, last_name, email",
         [firstName, lastName, email, userID]
