@@ -14,7 +14,6 @@ import bcrypt from "bcrypt";
 const app = express();
 
 // Middlewares
-
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(

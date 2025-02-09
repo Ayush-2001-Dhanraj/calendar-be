@@ -39,8 +39,47 @@ const getAllUserEvents = async (req, res, next) => {
   }
   return next(new UnauthorizedError("Unauthorized!"));
 };
-const getEvent = (req, res) => {};
-const deleteEvent = (req, res) => {};
-const updateEvent = (req, res) => {};
+const getEvent = async (req, res, next) => {
+  if (req.isAuthenticated()) {
+    const { eventID } = req.params;
+    const event = await sql("SELECT * FROM events WHERE id =$1", [eventID]);
+    if (event.length) {
+      return res.json({ event: event[0] });
+    } else {
+      return res.json({ msg: `Can't find the event with id ${eventID}` });
+    }
+  }
+  return next(new UnauthorizedError("Unauthorized!"));
+};
+const deleteEvent = async (req, res, next) => {
+  if (req.isAuthenticated()) {
+    const { eventID } = req.params;
+    const event = await sql("SELECT * FROM events WHERE id =$1", [eventID]);
+    if (event.length) {
+      await sql("DELETE FROM events WHERE id = $1", [eventID]);
+      return res.json({ msg: "Event Deleted Successfully!!" });
+    } else {
+      return res.json({ msg: `Can't find the event with id ${eventID}` });
+    }
+  }
+  return next(new UnauthorizedError("Unauthorized!"));
+};
+const updateEvent = async (req, res, next) => {
+  if (req.isAuthenticated()) {
+    const { eventID } = req.params;
+    const event = await sql("SELECT * FROM events WHERE id =$1", [eventID]);
+    if (event.length) {
+      const { title, description, eventDate, eventTime } = req.body;
+      const updatedEvent = await sql(
+        "UPDATE events set title = $1, description = $2, event_date = $3, event_time = $4 WHERE id = $5 RETURNING *, event_date::TEXT AS event_date",
+        [title, description, eventDate, eventTime, eventID]
+      );
+      return res.json({ event: updatedEvent[0] });
+    } else {
+      return res.json({ msg: `Can't find the event with id ${eventID}` });
+    }
+  }
+  return next(new UnauthorizedError("Unauthorized!"));
+};
 
 export { createEvent, getEvent, getAllUserEvents, deleteEvent, updateEvent };

@@ -36,6 +36,6 @@ router
   .route("/event/:eventID")
   .get(getEvent)
   .delete(deleteEvent)
-  .patch(updateEvent);
+  .put(updateEvent);
 
 export default router;
