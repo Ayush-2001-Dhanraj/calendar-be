@@ -46,7 +46,6 @@ passport.use(
   new Strategy(
     { usernameField: "email" }, // ✅ Tell Passport to use "email" instead of "username"
     async function verify(email, password, cb) {
-      console.log("Received login attempt:", email, password); // 🔥 Debugging log
       try {
         const retrievedUser = await sql(
           "SELECT * FROM users WHERE email = $1",

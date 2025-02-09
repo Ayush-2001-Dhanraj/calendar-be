@@ -2,7 +2,7 @@ import express from "express";
 const router = express.Router();
 
 import { login, register, loginFailed } from "../controller/auth.js";
-import { deleteUser, getUser, updateEmail } from "../controller/user.js";
+import { deleteUser, getUser, updateUserDetails } from "../controller/user.js";
 import {
   createEvent,
   getEvent,
@@ -26,7 +26,7 @@ router.route("/auth/register").post(register);
 router
   .route("/user/:userID")
   .get(getUser)
-  .patch(updateEmail)
+  .put(updateUserDetails)
   .delete(deleteUser)
   .post(createEvent);
 
