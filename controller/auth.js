@@ -3,11 +3,13 @@ import { BadRequestError, UnauthorizedError } from "../errors/index.js";
 import bcrypt from "bcrypt";
 
 const loginFailed = (req, res, next) => {
-  return next(new BadRequestError("Login Failed"));
+  return res
+    .status(400)
+    .json({ msg: "Login Failed! Check email or password!" });
 };
 const login = (req, res, next) => {
   if (req.isAuthenticated()) {
-    return res.json({ msg: "Success", user: req.user });
+    return res.json({ user: req.user });
   } else {
     return next(new UnauthorizedError("Unauthorized!!"));
   }
