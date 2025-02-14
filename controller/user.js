@@ -1,11 +1,18 @@
 import sql from "../db/sql.js";
 import { UnauthorizedError } from "../errors/index.js";
 
+const getCurrentUser = async (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return res.json({ user: req.user });
+  }
+  return next(new UnauthorizedError("Unauthorized!"));
+};
+
 const getUser = async (req, res, next) => {
   if (req.isAuthenticated()) {
     const { userID } = req.params;
     const user = await sql(
-      "SELECT first_name,last_name, email FROM users WHERE id =$1",
+      "SELECT first_name,last_name, email, id FROM users WHERE id =$1",
       [userID]
     );
     if (user.length) {
@@ -50,4 +57,4 @@ const deleteUser = async (req, res, next) => {
   return next(new UnauthorizedError("Unauthorized!"));
 };
 
-export { getUser, deleteUser, updateUserDetails };
+export { getUser, deleteUser, updateUserDetails, getCurrentUser };

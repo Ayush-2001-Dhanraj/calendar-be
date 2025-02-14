@@ -2,7 +2,12 @@ import express from "express";
 const router = express.Router();
 
 import { login, register, loginFailed } from "../controller/auth.js";
-import { deleteUser, getUser, updateUserDetails } from "../controller/user.js";
+import {
+  deleteUser,
+  getUser,
+  updateUserDetails,
+  getCurrentUser,
+} from "../controller/user.js";
 import {
   createEvent,
   getEvent,
@@ -22,6 +27,8 @@ router
     login
   );
 router.route("/auth/register").post(register);
+
+router.route("/user").get(getCurrentUser);
 
 router
   .route("/user/:userID")
