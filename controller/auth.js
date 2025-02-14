@@ -40,4 +40,11 @@ const register = async (req, res, next) => {
   });
 };
 
-export { login, register, loginFailed };
+const logout = async (req, res, next) => {
+  req.logout((err) => {
+    if (err) console.log(err);
+    else res.json({ msg: "Logout Successful!" });
+  });
+};
+
+export { login, register, loginFailed, logout };

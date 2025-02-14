@@ -1,7 +1,7 @@
 import express from "express";
 const router = express.Router();
 
-import { login, register, loginFailed } from "../controller/auth.js";
+import { login, register, loginFailed, logout } from "../controller/auth.js";
 import {
   deleteUser,
   getUser,
@@ -27,6 +27,7 @@ router
     login
   );
 router.route("/auth/register").post(register);
+router.route("/auth/logout").get(logout);
 
 router.route("/user").get(getCurrentUser);
 
