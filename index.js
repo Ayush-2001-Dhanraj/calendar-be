@@ -24,7 +24,13 @@ const pgPool = new pg.Pool({
 });
 
 // Middlewares
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(
+  cors({
+    origin:
+      "https://calendar-1p4f-4gomywelf-ayush2001dhanrajs-projects.vercel.app",
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
