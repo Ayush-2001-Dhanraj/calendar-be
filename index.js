@@ -41,7 +41,6 @@ app.use(
       maxAge: 1000 * 60 * 60 * 24, // 1 day
       secure: false, // Secure in production
       httpOnly: true,
-      sameSite: "lax",
     },
   })
 );
