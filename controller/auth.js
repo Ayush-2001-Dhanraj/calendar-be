@@ -9,6 +9,7 @@ const loginFailed = (req, res, next) => {
 };
 const login = (req, res, next) => {
   if (req.isAuthenticated()) {
+    console.log("User authenticated, session data:", req.session); // ✅ Check session
     return res.json({ user: req.user });
   } else {
     return next(new UnauthorizedError("Unauthorized!!"));
@@ -33,8 +34,13 @@ const register = async (req, res, next) => {
       );
       const user = result[0];
       req.logIn(user, (err) => {
-        console.log(err);
-        res.redirect(`/api/v1/user/${user.id}`);
+        if (err) {
+          console.log(err);
+          return next(new Error("Login failed"));
+        } else {
+          console.log("User logged in, session data:", req.session); // ✅ Check session
+          res.redirect(`/api/v1/user/${user.id}`);
+        }
       });
     }
   });
