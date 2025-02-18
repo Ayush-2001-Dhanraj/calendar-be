@@ -10,6 +10,11 @@ const loginFailed = (req, res, next) => {
 const login = (req, res, next) => {
   if (req.isAuthenticated()) {
     console.log("User authenticated, session data:", req.session); // ✅ Check session
+
+    res.on("finish", () => {
+      console.log("Response headers:", res.getHeaders());
+    });
+
     return res.json({ user: req.user });
   } else {
     return next(new UnauthorizedError("Unauthorized!!"));
