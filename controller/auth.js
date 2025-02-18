@@ -44,6 +44,13 @@ const register = async (req, res, next) => {
           return next(new Error("Login failed"));
         } else {
           console.log("User logged in, session data:", req.session); // ✅ Check session
+          res.cookie("connect.sid", req.sessionID, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production", // Set to true in production
+            sameSite: "none",
+            maxAge: 1000 * 60 * 60 * 24, // 1 day
+          });
+
           res.redirect(`/api/v1/user/${user.id}`);
         }
       });
