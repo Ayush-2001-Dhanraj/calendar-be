@@ -1,5 +1,3 @@
-const PORT = 3001;
-
 import express from "express";
 import sql from "./db/sql.js";
 import appRoutes from "./routes/main.js";
@@ -13,6 +11,8 @@ import bcrypt from "bcrypt";
 import cors from "cors";
 
 const app = express();
+
+const PORT = process.env.PORT || 3001;
 
 // Middlewares
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
