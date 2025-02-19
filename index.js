@@ -5,23 +5,14 @@ import NotFoundMiddleWare from "./middleware/not-found.js";
 import ErrorHandlerMiddleware from "./middleware/error-handler.js";
 import { Strategy } from "passport-local";
 import bodyParser from "body-parser";
-import session from "express-session";
+import session from "cookie-session";
 import passport from "passport";
 import bcrypt from "bcrypt";
 import cors from "cors";
-import pg from "pg";
-import pgSession from "connect-pg-simple";
 
 const app = express();
 
 const PORT = process.env.PORT || 3001;
-
-const pgPool = new pg.Pool({
-  connectionString: process.env.DATABASE_URL, // Ensure this is set in .env
-  ssl: {
-    rejectUnauthorized: false, // Required for Neon
-  },
-});
 
 // Middlewares
 app.use(
@@ -35,19 +26,11 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   session({
-    store: new (pgSession(session))({
-      pool: pgPool, // Connect to your Neon PostgreSQL DB
-      tableName: "session", // Default is 'session'
-      createTableIfMissing: true, // Optional: Auto-creates the table
-    }),
-    secret: process.env.SESSION_SECRET || "default_secret",
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
+    secret: process.env.SESSION_SECRET,
     cookie: {
-      maxAge: 1000 * 60 * 60 * 24, // 1 day
-      secure: true,
-      httpOnly: true,
-      sameSite: "none",
+      maxAge: 1000 * 60 * 60 * 24,
     },
   })
 );
